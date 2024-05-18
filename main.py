@@ -1,5 +1,5 @@
-from folder_synchronizer import FolderSynchronizer
-from logger import setup_logging
+from functions.folder_synchronizer import FolderSynchronizer
+from functions.logger import setup_logging
 import argparse
 def main():
     parser = argparse.ArgumentParser(description='Synchronize two folders.')
