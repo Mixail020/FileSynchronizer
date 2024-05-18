@@ -1,3 +1,4 @@
+import logging
 import os
 import hashlib
 import shutil
@@ -6,7 +7,7 @@ import time
 
 
 class FolderSynchronizer:
-    def __init__(self, source_folder: str, replica_folder: str, logger):
+    def __init__(self, source_folder: str, replica_folder: str, logger: logging.Logger):
         """
         Initialize the FolderSynchronizer with source and replica folder paths and a logger.
 
@@ -141,6 +142,7 @@ class FolderSynchronizer:
         Args:
             sync_interval (int): Time interval (in seconds) between synchronization attempts (default is 10 seconds).
         """
+        self.logger.info(f'Synchronizer started ...')
         while True:
             self.sync_folders()
             time.sleep(sync_interval)

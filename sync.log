@@ -1,3 +1,3 @@
-2024-05-17 22:16:10,611 INFO Added files: sub_folder1\sub_sub_folder\Новая папка (2);
-2024-05-17 22:16:10,611 INFO Removed files: sub_folder1\sub_sub_folder\Новая папка\Новая папка;
-2024-05-17 22:19:17,698 INFO Added files: sub_folder1\sub_sub_folder\Новая папка (3);
+2024-05-18 12:54:58,317 - FolderSynchronizer - INFO - Added files: Text Document.txt;
+2024-05-18 12:55:01,328 - FolderSynchronizer - INFO - Added files: xx.txt;
+2024-05-18 12:55:01,328 - FolderSynchronizer - INFO - Removed files: Text Document.txt;

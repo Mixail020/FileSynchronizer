@@ -3,10 +3,10 @@ from logger import setup_logging
 import argparse
 def main():
     parser = argparse.ArgumentParser(description='Synchronize two folders.')
-    parser.add_argument('source_folder', type=str, help='The source folder to synchronize from')
-    parser.add_argument('replica_folder', type=str, help='The replica folder to synchronize to')
-    parser.add_argument('log_file', type=str, help='The log file path')
-    parser.add_argument('--interval', type=int, default=10, help='The synchronization interval in seconds (default: 10 seconds)')
+    parser.add_argument('-s', '--source_folder', type=str, help='The source folder to synchronize from')
+    parser.add_argument('-r', '--replica_folder', type=str, help='The replica folder to synchronize to')
+    parser.add_argument('-l', '--log_file', type=str, help='The log file path')
+    parser.add_argument('-i', '--interval', type=int, default=10, help='The synchronization interval in seconds (default: 10 seconds)')
 
     args = parser.parse_args()
 
