@@ -35,11 +35,15 @@ class FolderSynchronizer:
         Returns:
             str: The calculated hash of the file.
         """
-        hasher = hash_function()
-        with open(file_path, 'rb') as file:
-            while chunk := file.read(chunk_size):
-                hasher.update(chunk)
-        return hasher.hexdigest()
+        try:
+            hasher = hash_function()
+            with open(file_path, 'rb') as file:
+                while chunk := file.read(chunk_size):
+                    hasher.update(chunk)
+            return hasher.hexdigest()
+
+        except Exception as e:
+            self.logger.exception(f'Error calculating hash for file {file_path}: {e}')
 
     def compare_hashes(self):
         """
@@ -53,40 +57,43 @@ class FolderSynchronizer:
         removed_files = replica_files - source_files  # Files that are in replica but not in source
         modified_files = {file for file in source_files & replica_files if
                           self.source_hash[file] != self.replica_hash[file]}  # Files that are modified
-
-        if added_files:
-            message = 'Added files:'
-            for file in added_files:
-                source_file_path = os.path.join(self.source_folder, file)
-                replica_file_path = os.path.join(self.replica_folder, file)
-                if os.path.isdir(source_file_path):  # Check if the source path is a directory
-                    os.makedirs(replica_file_path, exist_ok=True)
-                else:
-                    os.makedirs(os.path.dirname(replica_file_path), exist_ok=True)
-                    self.copy_file(source_file_path, replica_file_path)
-                message += f' {file};'
-            self.logger.info(message)
-
-        if removed_files:
-            message = 'Removed files:'
-            for file in removed_files:
-                replica_file_path = os.path.join(self.replica_folder, file)
-                if os.path.exists(replica_file_path):  # Check if the replica path exists
-                    if os.path.isdir(replica_file_path):  # Check if the replica path is a directory
-                        shutil.rmtree(replica_file_path)  # Remove the directory
+        try:
+            if added_files:
+                message = 'Added files:'
+                for file in added_files:
+                    source_file_path = os.path.join(self.source_folder, file)
+                    replica_file_path = os.path.join(self.replica_folder, file)
+                    if os.path.isdir(source_file_path):  # Check if the source path is a directory
+                        os.makedirs(replica_file_path, exist_ok=True)
                     else:
-                        os.remove(replica_file_path)  # Remove the file
-                message += f' {file};'
-            self.logger.info(message)
+                        os.makedirs(os.path.dirname(replica_file_path), exist_ok=True)
+                        self.copy_file(source_file_path, replica_file_path)
+                    message += f' {file};'
+                self.logger.info(message)
 
-        if modified_files:
-            message = 'Modified files:'
-            for file in modified_files:
-                source_file_path = os.path.join(self.source_folder, file)
-                replica_file_path = os.path.join(self.replica_folder, file)
-                self.copy_file(source_file_path, replica_file_path)  # Copy the modified file to replica
-                message += f' {file};'
-            self.logger.info(message)
+            if removed_files:
+                message = 'Removed files:'
+                for file in removed_files:
+                    replica_file_path = os.path.join(self.replica_folder, file)
+                    if os.path.exists(replica_file_path):  # Check if the replica path exists
+                        if os.path.isdir(replica_file_path):  # Check if the replica path is a directory
+                            shutil.rmtree(replica_file_path)  # Remove the directory
+                        else:
+                            os.remove(replica_file_path)  # Remove the file
+                    message += f' {file};'
+                self.logger.info(message)
+
+            if modified_files:
+                message = 'Modified files:'
+                for file in modified_files:
+                    source_file_path = os.path.join(self.source_folder, file)
+                    replica_file_path = os.path.join(self.replica_folder, file)
+                    self.copy_file(source_file_path, replica_file_path)  # Copy the modified file to replica
+                    message += f' {file};'
+                self.logger.info(message)
+
+        except MemoryError:
+            self.logger.error('MemoryError: Insufficient memory to complete the hash comparison.')
 
     def process_directory(self, source_path: str) -> dict:
         """
@@ -124,7 +131,10 @@ class FolderSynchronizer:
             source_file (str): Path to the source file.
             destination_file (str): Path to the destination file.
         """
-        shutil.copy2(source_file, destination_file)  # Copy the file preserving metadata
+        try:
+            shutil.copy2(source_file, destination_file)  # Copy the file preserving metadata
+        except Exception as e:
+            self.logger.exception(f'Error copying file {source_file} to {destination_file}: {e}')
 
     def sync_folders(self):
         """
